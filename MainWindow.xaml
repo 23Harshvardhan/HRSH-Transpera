@@ -7,12 +7,13 @@
         mc:Ignorable="d"
         Title="HRSH Transpera" Height="450" Width="800" ResizeMode="NoResize" Loaded="mainWind_Loaded">
     <Window.Background>
-        <ImageBrush ImageSource="/img/570413.jpg"/>
+        <ImageBrush ImageSource="/img/e3d5f2a3c62588bcd3d4f125049bb0fa.png"/>
     </Window.Background>
     <Grid HorizontalAlignment="Left" Width="800">
         <Rectangle HorizontalAlignment="Left" Width="234" Height="NaN" Fill="#3F000000"/>
         <StackPanel x:Name="modsList" Margin="0,40,566,0"/>
         <Label Content="Your Modifications" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
         <Image x:Name="btnAddMod" HorizontalAlignment="Left" Height="33" Margin="200,5,0,0" VerticalAlignment="Top" Width="33" Source="/img/icons8-add-new-90.png" MouseDown="btnAddMod_MouseDown"/>
+        <Image HorizontalAlignment="Left" Height="192" Margin="239,22,0,0" VerticalAlignment="Top" Width="415" Source="/img/counter-strike-symbol-png-logo-11.png"/>
     </Grid>
 </Window>

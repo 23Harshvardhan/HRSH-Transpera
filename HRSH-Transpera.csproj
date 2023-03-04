@@ -101,5 +101,11 @@
   <ItemGroup>
     <Resource Include="img\icons8-add-new-90.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\counter-strike-symbol-png-logo-11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\e3d5f2a3c62588bcd3d4f125049bb0fa.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
