@@ -11,9 +11,19 @@
     </Window.Background>
     <Grid HorizontalAlignment="Left" Width="800">
         <Rectangle HorizontalAlignment="Left" Width="234" Height="NaN" Fill="#3F000000"/>
+        <Rectangle HorizontalAlignment="Left" Width="344" Height="NaN" Fill="#7F000000" Margin="320,0,0,23"/>
         <StackPanel x:Name="modsList" Margin="0,40,566,0"/>
         <Label Content="Your Modifications" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
         <Image x:Name="btnAddMod" HorizontalAlignment="Left" Height="33" Margin="200,5,0,0" VerticalAlignment="Top" Width="33" Source="/img/icons8-add-new-90.png" MouseDown="btnAddMod_MouseDown"/>
-        <Image HorizontalAlignment="Left" Height="192" Margin="239,22,0,0" VerticalAlignment="Top" Width="415" Source="/img/counter-strike-symbol-png-logo-11.png"/>
+        <Image HorizontalAlignment="Left" Height="192" Margin="318,18,0,0" VerticalAlignment="Top" Width="415" Source="/img/counter-strike-symbol-png-logo-11.png"/>
+        <Image x:Name="playBtn" HorizontalAlignment="Left" Height="41" Margin="342,184,0,0" VerticalAlignment="Top" Width="104" Source="/img/playBtn.png"/>
+        <Image x:Name="vacBtn" HorizontalAlignment="Left" Height="41" Margin="440,184,0,0" VerticalAlignment="Top" Width="44" Source="/img/vacBtn.png"/>
+        <Label Content="Build Version 1.0.0" Margin="0,0,23,10" Foreground="White" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="107"/>
+        <Label Content="Selected Modification:" HorizontalAlignment="Left" Margin="342,276,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label x:Name="lblCurMod" Content="Transpera" HorizontalAlignment="Left" Margin="463,276,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label Content="Detection Status:" HorizontalAlignment="Left" Margin="342,289,0,0" VerticalAlignment="Top" Foreground="White" Background="{x:Null}"/>
+        <Label x:Name="lblStealth" Content="Undetected" HorizontalAlignment="Left" Margin="463,289,0,0" VerticalAlignment="Top" Foreground="#FF05AD00"/>
+        <Rectangle x:Name="rectVacStatus" HorizontalAlignment="Right" Margin="0,0,136,0" Width="344" Fill="#4CFF8C00" Height="23" VerticalAlignment="Bottom"/>
+        <Label x:Name="lblVacStatus" Content="VAC Protection Not Active" HorizontalAlignment="Left" Margin="320,0,0,3" Height="23" VerticalAlignment="Bottom" Foreground="White"/>
     </Grid>
 </Window>

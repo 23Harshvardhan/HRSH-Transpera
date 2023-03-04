@@ -24,6 +24,7 @@ namespace HRSH_Transpera
     public partial class MainWindow : Window
     {
         static string rootDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\HRSH\Transpera\";
+        static string modsDir = rootDir + @"mods\";
 
         public MainWindow()
         {
@@ -34,12 +35,10 @@ namespace HRSH_Transpera
 
         private void mainWind_Loaded(object sender, RoutedEventArgs e)
         {
-            //modsList
-            //loadModification("Transpera");
-
             if(!Directory.Exists(rootDir))
             {
                 Directory.CreateDirectory(rootDir);
+                Directory.CreateDirectory(modsDir);
             }
 
             if(!File.Exists(rootDir + "mods.ini"))
@@ -88,9 +87,9 @@ namespace HRSH_Transpera
             }
         }
 
-        void addModification(string name, string path)
+        void addModification(string name, string type)
         {
-            modIni.Write(name, path);
+            modIni.Write(name, type);
             drawModList();
         }
 
