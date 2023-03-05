@@ -13,5 +13,6 @@ namespace HRSH_Transpera
     /// </summary>
     public partial class App : Application
     {
+        public static bool antivac = false;
     }
 }

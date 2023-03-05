@@ -14,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using System.Diagnostics;
+using System.Windows.Media.Animation;
 
 namespace HRSH_Transpera
 {
@@ -25,6 +27,7 @@ namespace HRSH_Transpera
     {
         static string rootDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\HRSH\Transpera\";
         static string modsDir = rootDir + @"mods\";
+        static string toolsDir = rootDir + @"tools\";
 
         public MainWindow()
         {
@@ -39,6 +42,7 @@ namespace HRSH_Transpera
             {
                 Directory.CreateDirectory(rootDir);
                 Directory.CreateDirectory(modsDir);
+                Directory.CreateDirectory(toolsDir);
             }
 
             if(!File.Exists(rootDir + "mods.ini"))
@@ -104,6 +108,50 @@ namespace HRSH_Transpera
             if(result == true) 
             {
                 addModification(openFileDiag.SafeFileName, openFileDiag.FileName);
+            }
+        }
+
+        private void playBtn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(App.antivac == true)
+            {
+
+            } 
+            else
+            {
+                MessageBoxResult result = MessageBox.Show("AntiVAC is not enabled. Continue to launch?", "AntiVAC warning!", MessageBoxButton.YesNo);
+                if(result == MessageBoxResult.Yes)
+                {
+
+                }
+            }
+        }
+
+        private void vacBtn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Please exit Stream process from everywhere.", "Is Steam Closed?", MessageBoxButton.YesNo);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    Process proc = new Process();
+                    proc.StartInfo.FileName = toolsDir + "antivac.exe";
+                    proc.StartInfo.UseShellExecute = true;
+                    proc.StartInfo.Verb = "runas";
+                    proc.Start();
+
+                    rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60,8,255,0));
+                    lblVacStatus.Content = "VAC Protection Active";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "Error");
+                }
+            } 
+            else if (result == MessageBoxResult.No)
+            {
+                MessageBox.Show("Please close Steam and try again.", "Please close Steam");
             }
         }
     }
