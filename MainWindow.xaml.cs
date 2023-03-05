@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
 using System.Windows.Media.Animation;
+using System.Net;
 
 namespace HRSH_Transpera
 {
@@ -43,6 +44,24 @@ namespace HRSH_Transpera
                 Directory.CreateDirectory(rootDir);
                 Directory.CreateDirectory(modsDir);
                 Directory.CreateDirectory(toolsDir);
+            }
+
+            if(!Directory.Exists(modsDir))
+            {
+                Directory.CreateDirectory(modsDir);
+
+                WebClient client = new WebClient();
+                client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/Transpera.dll", modsDir + "Transpera.dll");
+                client.Dispose();
+            }
+
+            if(!Directory.Exists(toolsDir))
+            {
+                Directory.CreateDirectory(toolsDir);
+
+                WebClient client = new WebClient();
+                client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/antivac.exe", toolsDir + "antivac.exe");
+                client.Dispose();
             }
 
             if(!File.Exists(rootDir + "mods.ini"))
@@ -113,45 +132,129 @@ namespace HRSH_Transpera
 
         private void playBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(App.antivac == true)
+            if (File.Exists(modsDir + "Transpera.dll"))
             {
+                injectMod();
+            }
+            else
+            {
+                WebClient client = new WebClient();
+                client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/Transpera.dll", modsDir + "Transpera.dll");
+                client.Dispose();
 
-            } 
+                injectMod();
+            }
+        }
+
+        void injectMod()
+        {
+            if (App.antivac == true)
+            {
+                MessageBoxResult result = MessageBox.Show("Launch the game and press OK once reached main menu.", "Waiting for CSGO", MessageBoxButton.OK);
+
+                if (result == MessageBoxResult.OK)
+                {
+                    Injection.Run(modsDir + "Transpera.dll");
+                }
+            }
             else
             {
                 MessageBoxResult result = MessageBox.Show("AntiVAC is not enabled. Continue to launch?", "AntiVAC warning!", MessageBoxButton.YesNo);
-                if(result == MessageBoxResult.Yes)
+                if (result == MessageBoxResult.Yes)
                 {
+                    MessageBoxResult result2 = MessageBox.Show("Launch the game and press OK once reached main menu.", "Waiting for CSGO", MessageBoxButton.OK);
 
+                    if (result2 == MessageBoxResult.OK)
+                    {
+                        Injection.Run(modsDir + "Transpera.dll");
+                    }
                 }
             }
         }
 
+        void StartAntiVac()
+        {
+            foreach (var process in Process.GetProcessesByName("csgo"))
+            {
+                process.Kill();
+            }
+            foreach (var process in Process.GetProcessesByName("Steam"))
+            {
+                process.Kill();
+            }
+            foreach (var process in Process.GetProcessesByName("steamwebhelper"))
+            {
+                process.Kill();
+            }
+            foreach (var process in Process.GetProcessesByName("SteamService"))
+            {
+                process.Kill();
+            }
+
+            Process proc = new Process();
+            proc.StartInfo.FileName = toolsDir + "antivac.exe";
+            proc.StartInfo.UseShellExecute = true;
+            proc.StartInfo.Verb = "runas";
+            proc.Start();
+
+            rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60, 8, 255, 0));
+            lblVacStatus.Content = "VAC Protection Active";
+            App.antivac = true;
+
+            //try
+            //{
+            //    if(antiVacProc())
+            //    {
+            //        rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60, 8, 255, 0));
+            //        lblVacStatus.Content = "VAC Protection Active";
+            //        App.antivac = true;
+
+            //        await Task.Run(() => {
+            //            foreach (var process in Process.GetProcessesByName("Steam"))
+            //            {
+            //                process.WaitForExit();
+            //            }
+
+            //            App.antivac = false;
+            //            rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60, 255, 140, 0));
+            //            lblVacStatus.Content = "VAC Protection Not Active";
+            //        });
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show("Failed!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.ToString(), "Error");
+            //}
+        }
+
+        //bool antiVacProc()
+        //{
+        //    Process proc = new Process();
+        //    proc.StartInfo.FileName = toolsDir + "antivac.exe";
+        //    proc.StartInfo.UseShellExecute = true;
+        //    proc.StartInfo.Verb = "runas";
+        //    proc.Start();
+
+        //    return true;
+        //}
+
         private void vacBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Please exit Stream process from everywhere.", "Is Steam Closed?", MessageBoxButton.YesNo);
-
-            if (result == MessageBoxResult.Yes)
+            if (File.Exists(toolsDir + "antivac.exe"))
             {
-                try
-                {
-                    Process proc = new Process();
-                    proc.StartInfo.FileName = toolsDir + "antivac.exe";
-                    proc.StartInfo.UseShellExecute = true;
-                    proc.StartInfo.Verb = "runas";
-                    proc.Start();
-
-                    rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60,8,255,0));
-                    lblVacStatus.Content = "VAC Protection Active";
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString(), "Error");
-                }
-            } 
-            else if (result == MessageBoxResult.No)
+                StartAntiVac();
+            }
+            else
             {
-                MessageBox.Show("Please close Steam and try again.", "Please close Steam");
+                WebClient client = new WebClient();
+                client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/antivac.exe", toolsDir + "antivac.exe");
+                client.Dispose();
+
+                StartAntiVac();
             }
         }
     }

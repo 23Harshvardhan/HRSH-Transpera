@@ -5,10 +5,11 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using System.Windows;
 
 namespace HRSH_Transpera.tools
 {
-    public static class Pusher
+    public static class Injection
     {
         private static List<FuncDLL> _functions = new List<FuncDLL>()
         {
@@ -35,7 +36,7 @@ namespace HRSH_Transpera.tools
         private static IntPtr hGame = IntPtr.Zero;
         private static UInt32 pid = UInt32.MinValue;
 
-        public static bool Push(string pathToDLL)
+        public static bool Run(string pathToDLL)
         {
             Init();
 
@@ -43,14 +44,14 @@ namespace HRSH_Transpera.tools
 
             if (pid == UInt32.MinValue)
             {
-                throw new ApplicationException("The game was not found.");
+                MessageBox.Show("CSGO Process not found!", "Error: CSGO Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             hGame = OpenProcess(ProcessAccessFlags.All, false, (int)pid);
 
             if (hGame == IntPtr.Zero)
             {
-                throw new ApplicationException("Failed to open process.");
+                MessageBox.Show("Failed to open process!", "Error: Process failed to init", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             BypassCSGOHook();
@@ -72,7 +73,7 @@ namespace HRSH_Transpera.tools
 
             if (handle == IntPtr.Zero)
             {
-                throw new ApplicationException("Failed to open process.");
+                MessageBox.Show("Failed to open process!", "Error: Process failed to init", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             IntPtr size = (IntPtr)path.Length;
@@ -100,7 +101,7 @@ namespace HRSH_Transpera.tools
                 throw new ApplicationException("Failed to load LoadLibraryA.");
             }
 
-            IntPtr threadHandle = CreateRemoteThread(handle, IntPtr.Zero, 0, loadLibraryAAddress, DLLMemory, 0,
+            IntPtr threadHandle = CreateRemoteThread(handle, IntPtr.Zero, 0, loadLibraryAAddress, DLLMemory, 0, 
                 IntPtr.Zero);
 
             if (threadHandle == IntPtr.Zero)
@@ -286,5 +287,6 @@ namespace HRSH_Transpera.tools
         static extern bool CloseHandle(IntPtr hObject);
 
         #endregion
+
     }
 }
