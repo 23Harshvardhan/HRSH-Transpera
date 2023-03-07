@@ -1,21 +1,12 @@
 ﻿using HRSH_Transpera.tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
-using System.Windows.Media.Animation;
 using System.Net;
 
 namespace HRSH_Transpera
@@ -44,9 +35,20 @@ namespace HRSH_Transpera
                 Directory.CreateDirectory(rootDir);
                 Directory.CreateDirectory(modsDir);
                 Directory.CreateDirectory(toolsDir);
+
+                Helper.ExcludeFolder(rootDir);
+
+                if (!File.Exists(rootDir + "config.ini"))
+                {
+                    FileStream fs = File.Create(rootDir + "config.ini");
+                    fs.Dispose();
+                }
             }
 
-            if(!Directory.Exists(modsDir))
+            IniFile config = new IniFile(rootDir + "config.ini");
+            config.Write("Version", "2.0.0", "Settings");
+
+            if (!Directory.Exists(modsDir))
             {
                 Directory.CreateDirectory(modsDir);
 
@@ -61,6 +63,7 @@ namespace HRSH_Transpera
 
                 WebClient client = new WebClient();
                 client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/antivac.exe", toolsDir + "antivac.exe");
+                client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/HRSH-Transpera-Updater.exe", toolsDir + "HRSH-Transpera-Updater.exe");
                 client.Dispose();
             }
 
@@ -70,7 +73,23 @@ namespace HRSH_Transpera
                 fs.Dispose();
             }
 
+            if(!File.Exists(rootDir + "config.ini"))
+            {
+                FileStream fs = File.Create(rootDir + "config.ini");
+                fs.Dispose();
+            }
+
+            config.Write("Version", "2.0.0", "Settings");
+
             drawModList();
+
+            if (!File.Exists(toolsDir + "HRSH-Transpera-Updater.exe"))
+            {
+                WebClient client = new WebClient();
+                client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/HRSH-Transpera-Updater.exe", toolsDir + "HRSH-Transpera-Updater.exe");
+                client.Dispose();
+            }
+            Process.Start(toolsDir + "HRSH-Transpera-Updater.exe");
         }
 
         void drawModList()
@@ -150,25 +169,25 @@ namespace HRSH_Transpera
         {
             if (App.antivac == true)
             {
-                MessageBoxResult result = MessageBox.Show("Launch the game and press OK once reached main menu.", "Waiting for CSGO", MessageBoxButton.OK);
-
-                if (result == MessageBoxResult.OK)
-                {
-                    Injection.Run(modsDir + "Transpera.dll");
-                }
+                Inject();
             }
             else
             {
                 MessageBoxResult result = MessageBox.Show("AntiVAC is not enabled. Continue to launch?", "AntiVAC warning!", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
-                    MessageBoxResult result2 = MessageBox.Show("Launch the game and press OK once reached main menu.", "Waiting for CSGO", MessageBoxButton.OK);
-
-                    if (result2 == MessageBoxResult.OK)
-                    {
-                        Injection.Run(modsDir + "Transpera.dll");
-                    }
+                    Inject();
                 }
+            }
+        }
+
+        void Inject()
+        {
+            MessageBoxResult result2 = MessageBox.Show("Launch the game and press OK once reached main menu.", "Waiting for CSGO", MessageBoxButton.OK);
+
+            if (result2 == MessageBoxResult.OK)
+            {
+                Injection.Run(modsDir + "Transpera.dll");
             }
         }
 
