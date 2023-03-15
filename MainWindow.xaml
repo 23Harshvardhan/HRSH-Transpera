@@ -18,12 +18,14 @@
         <Image HorizontalAlignment="Left" Height="192" Margin="318,18,0,0" VerticalAlignment="Top" Width="415" Source="/img/counter-strike-symbol-png-logo-11.png"/>
         <Image x:Name="playBtn" HorizontalAlignment="Left" Height="41" Margin="342,184,0,0" VerticalAlignment="Top" Width="104" Source="/img/playBtn.png" MouseDown="playBtn_MouseDown"/>
         <Image x:Name="vacBtn" HorizontalAlignment="Left" Height="41" Margin="440,184,0,0" VerticalAlignment="Top" Width="44" Source="/img/vacBtn.png" MouseDown="vacBtn_MouseDown"/>
-        <Label Content="Build Version 2.0.0" Margin="0,0,23,10" Foreground="White" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="107"/>
+        <Label Content="Build Version 3.0.0" Margin="0,0,23,10" Foreground="White" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="107"/>
         <Label Content="Selected Modification:" HorizontalAlignment="Left" Margin="342,276,0,0" VerticalAlignment="Top" Foreground="White"/>
-        <Label x:Name="lblCurMod" Content="Transpera" HorizontalAlignment="Left" Margin="463,276,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label x:Name="lblCurMod" Content="" HorizontalAlignment="Left" Margin="463,276,0,0" VerticalAlignment="Top" Foreground="White"/>
         <Label Content="Detection Status:" HorizontalAlignment="Left" Margin="342,289,0,0" VerticalAlignment="Top" Foreground="White" Background="{x:Null}"/>
-        <Label x:Name="lblStealth" Content="Undetected" HorizontalAlignment="Left" Margin="463,289,0,0" VerticalAlignment="Top" Foreground="#FF05AD00"/>
+        <Label x:Name="lblStealth" Content="" HorizontalAlignment="Left" Margin="463,289,0,0" VerticalAlignment="Top" Foreground="#FF05AD00"/>
         <Rectangle x:Name="rectVacStatus" HorizontalAlignment="Right" Margin="0,0,136,0" Width="344" Fill="#4CFF8C00" Height="23" VerticalAlignment="Bottom"/>
         <Label x:Name="lblVacStatus" Content="VAC Protection Not Active" HorizontalAlignment="Left" Margin="320,0,0,3" Height="23" VerticalAlignment="Bottom" Foreground="White"/>
+        <Label Content="Version:" HorizontalAlignment="Left" Margin="342,302,0,0" VerticalAlignment="Top" Foreground="White" Background="{x:Null}"/>
+        <Label x:Name="lblModVer" Content="" HorizontalAlignment="Left" Margin="463,302,0,0" VerticalAlignment="Top" Foreground="White"/>
     </Grid>
 </Window>
