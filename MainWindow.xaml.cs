@@ -48,13 +48,14 @@ namespace HRSH_Transpera
                 {
                     IniFile modStatusIni = new IniFile(rootDir + "modStatus.ini");
                     modStatusIni.Write("name", "Transpera", "Transpera");
-                    modStatusIni.Write("status", "Undetected", "Transpera");
-                    modStatusIni.Write("version", "1.0.0", "Transpera");
+                    modStatusIni.Write("status", getModDetails("Transpera", "status"), "Transpera");
+                    modStatusIni.Write("version", getModDetails("Transpera", "version"), "Transpera");
                 }    
             }
 
             IniFile config = new IniFile(rootDir + "config.ini");
             config.Write("Version", "2.0.0", "Settings");
+            config.Write("UpdaterVersion", "1.0.0", "Settings");
 
             if (!Directory.Exists(modsDir))
             {
@@ -100,12 +101,20 @@ namespace HRSH_Transpera
             drawModList();
             drawMod("Transpera");
 
-            if (!File.Exists(toolsDir + "HRSH-Transpera-Updater.exe"))
+            if (config.Read("UpdaterVersion", "Settings") != Helper.GetUpdaterVersion())
             {
-                WebClient client = new WebClient();
-                client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/HRSH-Transpera-Updater.exe", toolsDir + "HRSH-Transpera-Updater.exe");
-                client.Dispose();
+                Helper.DownloadUpdater();
             }
+
+            if (!File.Exists(toolsDir + "HRSH-Transpera-Updater.exe"))
+                Helper.DownloadUpdater();
+
+            //else
+            //{
+            //    File.Delete(toolsDir + "HRSH-Transpera-Updater.exe");
+            //    Helper.DownloadUpdater();
+            //}
+
             Process.Start(toolsDir + "HRSH-Transpera-Updater.exe");
         }
 
@@ -159,19 +168,37 @@ namespace HRSH_Transpera
 
         void checkMod(string modName)
         {
-            if(lblStealth.Content == "Undetected")
+            IniFile modDetailsIni = new IniFile(rootDir + "modStatus.ini");
+            if(modDetailsIni.Read("status", modName) == "Undetected")
             {
                 if(getModDetails(modName, "status") == "Detected")
                 {
                     lblStealth.Content = "Detected";
                     lblStealth.Foreground = Brushes.Red;
+                    modDetailsIni.Write("status", "Detected", modName);
                 }
             }
-
-            if(lblModVer.Content != getModDetails(modName, "version"))
+            else if(modDetailsIni.Read("status", modName) == "Detected")
             {
-                //update mod here
+                if(getModDetails(modName, "status") == "Undetected")
+                {
+                    reDownloadMod(modName);
+                }
             }
+        }
+
+        void reDownloadMod(string modName)
+        {
+            IniFile modStatusIni = new IniFile(rootDir + "modStatus.ini");
+            File.Delete(modsDir + modName + ".dll");
+            WebClient wc = new WebClient();
+            wc.DownloadFile("https://an0maly.blob.core.windows.net/transpera/" + modName + ".dll", modsDir + modName + ".dll");
+            wc.Dispose();
+
+            modStatusIni.Write("status", getModDetails(modName, "status"), modName);
+            modStatusIni.Write("version", getModDetails(modName, "version"), modName);
+
+            drawMod(modName);
         }
 
         string getModDetails(string modName, string type)
@@ -182,7 +209,6 @@ namespace HRSH_Transpera
 
             if(type == "status")
             {
-                MessageBox.Show(status.Substring(0, status.IndexOf(';')));
                 return status.Substring(0, status.IndexOf(';'));
             }
             else if(type == "version")

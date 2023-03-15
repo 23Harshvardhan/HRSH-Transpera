@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Management.Automation;
+using System.Net;
 using System.Windows;
 using Microsoft.Win32;
 
@@ -8,6 +9,10 @@ namespace HRSH_Transpera.tools
 {
     public class Helper
     {
+        static string rootDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\HRSH\Transpera\";
+        static string modsDir = rootDir + @"mods\";
+        static string toolsDir = rootDir + @"tools\";
+
         public static void ExcludeFolder(string folderPath)
         {
             PowerShell ps = PowerShell.Create();
@@ -29,6 +34,26 @@ namespace HRSH_Transpera.tools
             {
                 return csgoPath;
             }
+        }
+
+        public static void DownloadUpdater()
+        {
+            WebClient client = new WebClient();
+            client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/HRSH-Transpera-Updater.exe", toolsDir + "HRSH-Transpera-Updater.exe");
+            client.Dispose();
+        }
+
+        public static string GetUpdaterVersion()
+        { 
+            if(File.Exists(toolsDir + "HRSH-Transpera-Updater.exe"))
+            {
+                File.Delete(toolsDir + "HRSH-Transpera-Updater.exe");
+            }
+
+            WebClient wc = new WebClient();
+            string version = wc.DownloadString("https://an0maly.blob.core.windows.net/transpera/UpdaterVersion.txt");
+            wc.Dispose();
+            return version;
         }
     }
 }
