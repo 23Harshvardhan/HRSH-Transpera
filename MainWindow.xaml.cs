@@ -169,22 +169,28 @@ namespace HRSH_Transpera
         void checkMod(string modName)
         {
             IniFile modDetailsIni = new IniFile(rootDir + "modStatus.ini");
-            if(modDetailsIni.Read("status", modName) == "Undetected")
+            if (modDetailsIni.Read("status", modName) == "Undetected")
             {
-                if(getModDetails(modName, "status") == "Detected")
+                if (getModDetails(modName, "status") == "Detected")
                 {
                     lblStealth.Content = "Detected";
                     lblStealth.Foreground = Brushes.Red;
                     modDetailsIni.Write("status", "Detected", modName);
                 }
             }
-            else if(modDetailsIni.Read("status", modName) == "Detected")
+
+            if(modDetailsIni.Read("version", modName) != getModDetails(modName, "version"))
             {
-                if(getModDetails(modName, "status") == "Undetected")
-                {
-                    reDownloadMod(modName);
-                }
+                reDownloadMod(modName);
             }
+
+            //else if(modDetailsIni.Read("status", modName) == "Detected")
+            //{
+            //    if(getModDetails(modName, "status") == "Undetected")
+            //    {
+            //        reDownloadMod(modName);
+            //    }
+            //}
         }
 
         void reDownloadMod(string modName)

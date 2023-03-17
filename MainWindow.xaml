@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HRSH_Transpera"
         mc:Ignorable="d"
-        Title="HRSH Transpera" Height="450" Width="800" ResizeMode="NoResize" Loaded="mainWind_Loaded">
+        Title="HRSH Transpera" Height="450" Width="800" ResizeMode="NoResize" Loaded="mainWind_Loaded" Icon="/img/icon.ico">
     <Window.Background>
         <ImageBrush ImageSource="/img/e3d5f2a3c62588bcd3d4f125049bb0fa.png"/>
     </Window.Background>
