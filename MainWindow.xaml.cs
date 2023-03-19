@@ -17,9 +17,13 @@ namespace HRSH_Transpera
 
     public partial class MainWindow : Window
     {
+        #region ======== PATHS SECTION ==========
+        
         static string rootDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\HRSH\Transpera\";
         static string modsDir = rootDir + @"mods\";
         static string toolsDir = rootDir + @"tools\";
+        
+        #endregion
 
         public MainWindow()
         {
@@ -46,16 +50,14 @@ namespace HRSH_Transpera
 
                 if(!File.Exists(rootDir + "modStatus.ini"))
                 {
-                    IniFile modStatusIni = new IniFile(rootDir + "modStatus.ini");
-                    modStatusIni.Write("name", "Transpera", "Transpera");
-                    modStatusIni.Write("status", getModDetails("Transpera", "status"), "Transpera");
-                    modStatusIni.Write("version", getModDetails("Transpera", "version"), "Transpera");
+                    ModInitializer.InitializeNewMod("Transpera");
+                    ModInitializer.InitializeNewMod("");
                 }    
             }
 
             IniFile config = new IniFile(rootDir + "config.ini");
-            config.Write("Version", "2.0.0", "Settings");
-            config.Write("UpdaterVersion", "1.0.0", "Settings");
+            config.Write("Version", VersionControl.clientVersion, "Settings");
+            config.Write("UpdaterVersion", VersionControl.updaterVersion, "Settings");
 
             if (!Directory.Exists(modsDir))
             {
@@ -93,10 +95,10 @@ namespace HRSH_Transpera
                 IniFile modStatusIni = new IniFile(rootDir + "modStatus.ini");
                 modStatusIni.Write("name", "Transpera", "Transpera");
                 modStatusIni.Write("status", "Undetected", "Transpera");
-                modStatusIni.Write("version", "1.0.0", "Transpera");
+                modStatusIni.Write("version", VersionControl.transperaVersion, "Transpera");
             }
 
-            config.Write("Version", "2.0.0", "Settings");
+            config.Write("Version", VersionControl.clientVersion, "Settings");
 
             drawModList();
             drawMod("Transpera");
@@ -108,12 +110,6 @@ namespace HRSH_Transpera
 
             if (!File.Exists(toolsDir + "HRSH-Transpera-Updater.exe"))
                 Helper.DownloadUpdater();
-
-            //else
-            //{
-            //    File.Delete(toolsDir + "HRSH-Transpera-Updater.exe");
-            //    Helper.DownloadUpdater();
-            //}
 
             Process.Start(toolsDir + "HRSH-Transpera-Updater.exe");
         }
@@ -163,15 +159,15 @@ namespace HRSH_Transpera
 
             lblModVer.Content = modStatusIni.Read("version", modName);
 
-            checkMod(modName);
+            CheckMod(modName);
         }
 
-        void checkMod(string modName)
+        void CheckMod(string modName)
         {
             IniFile modDetailsIni = new IniFile(rootDir + "modStatus.ini");
             if (modDetailsIni.Read("status", modName) == "Undetected")
             {
-                if (getModDetails(modName, "status") == "Detected")
+                if (Helper.GetModDetails(modName, "status") == "Detected")
                 {
                     lblStealth.Content = "Detected";
                     lblStealth.Foreground = Brushes.Red;
@@ -179,18 +175,10 @@ namespace HRSH_Transpera
                 }
             }
 
-            if(modDetailsIni.Read("version", modName) != getModDetails(modName, "version"))
+            if(modDetailsIni.Read("version", modName) != Helper.GetModDetails(modName, "version"))
             {
                 reDownloadMod(modName);
             }
-
-            //else if(modDetailsIni.Read("status", modName) == "Detected")
-            //{
-            //    if(getModDetails(modName, "status") == "Undetected")
-            //    {
-            //        reDownloadMod(modName);
-            //    }
-            //}
         }
 
         void reDownloadMod(string modName)
@@ -201,31 +189,10 @@ namespace HRSH_Transpera
             wc.DownloadFile("https://an0maly.blob.core.windows.net/transpera/" + modName + ".dll", modsDir + modName + ".dll");
             wc.Dispose();
 
-            modStatusIni.Write("status", getModDetails(modName, "status"), modName);
-            modStatusIni.Write("version", getModDetails(modName, "version"), modName);
+            modStatusIni.Write("status", Helper.GetModDetails(modName, "status"), modName);
+            modStatusIni.Write("version", Helper.GetModDetails(modName, "version"), modName);
 
             drawMod(modName);
-        }
-
-        string getModDetails(string modName, string type)
-        {
-            WebClient wc = new WebClient();
-            string status = wc.DownloadString("https://an0maly.blob.core.windows.net/transpera/Transpera.txt");
-            wc.Dispose();
-
-            if(type == "status")
-            {
-                return status.Substring(0, status.IndexOf(';'));
-            }
-            else if(type == "version")
-            {
-                return status.Substring(status.IndexOf(';') + 1);
-            }
-            else
-            {
-                MessageBox.Show("Unknown type requested in mod detail.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return "error";
-            }
         }
 
         void loadModification(string modName=null)
@@ -243,6 +210,8 @@ namespace HRSH_Transpera
             modIni.Write(name, type);
             drawModList();
         }
+
+        #region ========== EVENT SECTION ==========
 
         private void btnAddMod_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -262,7 +231,7 @@ namespace HRSH_Transpera
         {
             if (File.Exists(modsDir + "Transpera.dll"))
             {
-                injectMod();
+                Helper.InjectMod();
             }
             else
             {
@@ -270,111 +239,19 @@ namespace HRSH_Transpera
                 client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/Transpera.dll", modsDir + "Transpera.dll");
                 client.Dispose();
 
-                injectMod();
+                Helper.InjectMod();
             }
         }
-
-        void injectMod()
-        {
-            if (App.antivac == true)
-            {
-                Inject();
-            }
-            else
-            {
-                MessageBoxResult result = MessageBox.Show("AntiVAC is not enabled. Continue to launch?", "AntiVAC warning!", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
-                {
-                    Inject();
-                }
-            }
-        }
-
-        void Inject()
-        {
-            MessageBoxResult result2 = MessageBox.Show("Launch the game and press OK once reached main menu.", "Waiting for CSGO", MessageBoxButton.OK);
-
-            if (result2 == MessageBoxResult.OK)
-            {
-                Injection.Run(modsDir + "Transpera.dll");
-            }
-        }
-
-        void StartAntiVac()
-        {
-            foreach (var process in Process.GetProcessesByName("csgo"))
-            {
-                process.Kill();
-            }
-            foreach (var process in Process.GetProcessesByName("Steam"))
-            {
-                process.Kill();
-            }
-            foreach (var process in Process.GetProcessesByName("steamwebhelper"))
-            {
-                process.Kill();
-            }
-            foreach (var process in Process.GetProcessesByName("SteamService"))
-            {
-                process.Kill();
-            }
-
-            Process proc = new Process();
-            proc.StartInfo.FileName = toolsDir + "antivac.exe";
-            proc.StartInfo.UseShellExecute = true;
-            proc.StartInfo.Verb = "runas";
-            proc.Start();
-
-            rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60, 8, 255, 0));
-            lblVacStatus.Content = "VAC Protection Active";
-            App.antivac = true;
-
-            //try
-            //{
-            //    if(antiVacProc())
-            //    {
-            //        rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60, 8, 255, 0));
-            //        lblVacStatus.Content = "VAC Protection Active";
-            //        App.antivac = true;
-
-            //        await Task.Run(() => {
-            //            foreach (var process in Process.GetProcessesByName("Steam"))
-            //            {
-            //                process.WaitForExit();
-            //            }
-
-            //            App.antivac = false;
-            //            rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60, 255, 140, 0));
-            //            lblVacStatus.Content = "VAC Protection Not Active";
-            //        });
-            //    }
-            //    else
-            //    {
-            //        MessageBox.Show("Failed!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.ToString(), "Error");
-            //}
-        }
-
-        //bool antiVacProc()
-        //{
-        //    Process proc = new Process();
-        //    proc.StartInfo.FileName = toolsDir + "antivac.exe";
-        //    proc.StartInfo.UseShellExecute = true;
-        //    proc.StartInfo.Verb = "runas";
-        //    proc.Start();
-
-        //    return true;
-        //}
 
         private void vacBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (File.Exists(toolsDir + "antivac.exe"))
             {
-                StartAntiVac();
+                Helper.StartAntiVac();
+
+                rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60, 8, 255, 0));
+                lblVacStatus.Content = "VAC Protection Active";
+                App.antivac = true;
             }
             else
             {
@@ -382,8 +259,14 @@ namespace HRSH_Transpera
                 client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/antivac.exe", toolsDir + "antivac.exe");
                 client.Dispose();
 
-                StartAntiVac();
+                Helper.StartAntiVac();
+
+                rectVacStatus.Fill = new SolidColorBrush(Color.FromArgb(60, 8, 255, 0));
+                lblVacStatus.Content = "VAC Protection Active";
+                App.antivac = true;
             }
         }
+
+        #endregion
     }
 }
