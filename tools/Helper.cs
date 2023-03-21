@@ -40,22 +40,28 @@ namespace HRSH_Transpera.tools
 
         public static void DownloadUpdater()
         {
+            //MessageBox.Show("DownloadUpdater function called");
+
             WebClient client = new WebClient();
             client.DownloadFile("https://an0maly.blob.core.windows.net/transpera/HRSH-Transpera-Updater.exe", toolsDir + "HRSH-Transpera-Updater.exe");
             client.Dispose();
             IniFile config = new IniFile(rootDir + "config.ini");
+
             if (config.Read("UpdaterVersion", "Settings") != Helper.GetUpdaterVersion())
             {
+                //MessageBox.Show("Version mismatch in DownloadUpdater so getting latest updater version that is: " + GetUpdaterVersion());
                 config.Write("UpdaterVersion", GetUpdaterVersion(), "Settings");
             }
         }
 
         public static string GetUpdaterVersion()
-        { 
-            if(File.Exists(toolsDir + "HRSH-Transpera-Updater.exe"))
-            {
-                File.Delete(toolsDir + "HRSH-Transpera-Updater.exe");
-            }
+        {
+            //MessageBox.Show("GetUpdaterVersion function called");
+            //if(File.Exists(toolsDir + "HRSH-Transpera-Updater.exe"))
+            //{
+            //    MessageBox.Show("Updater already exists in GetUpdaterVersion ")
+            //    File.Delete(toolsDir + "HRSH-Transpera-Updater.exe");
+            //}
 
             WebClient wc = new WebClient();
             string version = wc.DownloadString("https://an0maly.blob.core.windows.net/transpera/UpdaterVersion.txt");
@@ -118,7 +124,17 @@ namespace HRSH_Transpera.tools
         public static string GetModDetails(string modName, string type)
         {
             WebClient wc = new WebClient();
-            string status = wc.DownloadString("https://an0maly.blob.core.windows.net/transpera/Transpera.txt");
+            string status = "";
+
+            try
+            {
+                status = wc.DownloadString("https://an0maly.blob.core.windows.net/transpera/Transpera.txt");
+            }
+            catch
+            {
+                MessageBox.Show("Unable to get modification details. Please check you connection and try again.", "Error While Getting Modification Details", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
             wc.Dispose();
 
             if (type == "status")
@@ -133,6 +149,24 @@ namespace HRSH_Transpera.tools
             {
                 MessageBox.Show("Unknown type requested in mod detail.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return "error";
+            }
+        }
+
+        public static void VerifyVersion()
+        {
+            IniFile config = new IniFile(rootDir + "config.ini");
+
+            string clientVersion = config.Read("Version", "Settings");
+            string updaterVersion = config.Read("UpdaterVersion", "Settings");
+
+            if(clientVersion != VersionControl.clientVersion)
+            {
+                config.Write("Version", VersionControl.clientVersion, "Settings");
+            }
+
+            if(updaterVersion != VersionControl.updaterVersion)
+            {
+                config.Write("UpdaterVersion", VersionControl.updaterVersion, "Settings");
             }
         }
     }

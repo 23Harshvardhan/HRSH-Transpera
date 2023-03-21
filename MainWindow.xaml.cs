@@ -51,13 +51,21 @@ namespace HRSH_Transpera
                 if(!File.Exists(rootDir + "modStatus.ini"))
                 {
                     ModInitializer.InitializeNewMod("Transpera");
-                    ModInitializer.InitializeNewMod("");
+                    //ModInitializer.InitializeNewMod("");
                 }    
             }
 
             IniFile config = new IniFile(rootDir + "config.ini");
-            config.Write("Version", VersionControl.clientVersion, "Settings");
-            config.Write("UpdaterVersion", VersionControl.updaterVersion, "Settings");
+
+            if(!config.KeyExists("Version", "Settings"))
+            {
+                config.Write("Version", VersionControl.clientVersion, "Settings");
+            }
+
+            if (!config.KeyExists("UpdaterVersion", "Settings"))
+            {
+                config.Write("UpdaterVersion", VersionControl.updaterVersion, "Settings");
+            }
 
             if (!Directory.Exists(modsDir))
             {
@@ -98,11 +106,16 @@ namespace HRSH_Transpera
                 modStatusIni.Write("version", VersionControl.transperaVersion, "Transpera");
             }
 
-            config.Write("Version", VersionControl.clientVersion, "Settings");
+            if (!config.KeyExists("Version", "Settings"))
+            {
+                config.Write("Version", VersionControl.clientVersion, "Settings");
+            }
+
+            Helper.VerifyVersion();
 
             drawModList();
             drawMod("Transpera");
-
+            //MessageBox.Show(Helper.GetUpdaterVersion());
             if (config.Read("UpdaterVersion", "Settings") != Helper.GetUpdaterVersion())
             {
                 Helper.DownloadUpdater();
